@@ -38,12 +38,45 @@ function createTodonode(todo , index){
     }
         //if any one double type the todo 
         textSpan.addEventListener("dblclick" , ()=> {
-            const newText = prompt("edit todo" , todo.text);
-            if(newText !== null){
-                todo.text = newText.trim(); // it will remove the extra space and the duplicate stuff
+            const editInput = document.createElement("input");
+            editInput.type = "text";
+            editInput.value = todo.text;
+            
+            // replace span with input 
+            li.replaceChild(editInput,textSpan);
+            editInput.focus();
+
+            function saveedit() {
+                const newtext = editInput.value.trim();
+                if(newtext){
+                    todo.text = newtext;
+                }
+
+                //restoring span
                 textSpan.textContent = todo.text;
-                saveTodos(); //cause we want to save the todos into the local storage
+                li.replaceChild(textSpan, editInput);
+                li.replaceChild(textSpan,editInput);
+                saveTodos();
             }
+            editInput.addEventListener("keydown" , (e) => {
+                if(e.key === "Enter"){
+                    saveedit();
+                }
+            });
+            //save when clicked outside
+            editInput.addEventListener("blur", saveedit)
+        });
+        // it will complete the todo task if they click on the task
+        textSpan.addEventListener("click",() => {
+            todo.completed = !todo.completed;
+            checkbox.checked = todo.completed;
+
+            if(todo.completed){
+                textSpan.style.textDecoration = "line-through";
+            }else{
+                textSpan.style.textDecoration = "none"
+            }
+            saveTodos();
         })
 
         //delete todo 
@@ -93,4 +126,6 @@ input.addEventListener("keypress", (e) => {
         addtodo();
     }
 })
+
+
 render();
